@@ -2,7 +2,7 @@
 
 namespace Ssh;
 
-use RuntimeException;
+use Ssh\Exception\RuntimeException;
 
 /**
  * Secure File Transfer Protocol
@@ -225,7 +225,7 @@ class Sftp extends Subsystem
         $results = $this->scanDirectory($directory, $recursive);
 
         if (false === $results) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'Unable to list directory "%s", maybe it is not a directory '.
                 'or it does not exist.',
                 $directory

@@ -2,7 +2,7 @@
 
 namespace Ssh;
 
-use RuntimeException;
+use Ssh\Exception\RuntimeException;
 
 /**
  * Wrapper for ssh2_exec

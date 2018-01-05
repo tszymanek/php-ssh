@@ -3,6 +3,7 @@
 namespace Ssh;
 
 use PHPUnit\Framework\TestCase;
+use Ssh\Exception\InvalidArgumentException;
 
 /**
  * @covers \Ssh\Subsystem
@@ -22,12 +23,11 @@ class SubsystemTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The session must be either a Session instance or a SSH session resource.
-     */
     public function testInvalidContructorArgumentException()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The session must be either a Session instance or a SSH session resource.');
+
         new Exec(false);
     }
 

@@ -2,7 +2,8 @@
 
 namespace Ssh;
 
-use InvalidArgumentException, RuntimeException;
+use Ssh\Exception\InvalidArgumentException;
+use Ssh\Exception\RuntimeException;
 
 /**
  * SSH session

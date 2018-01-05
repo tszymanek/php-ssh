@@ -2,7 +2,7 @@
 
 namespace Ssh;
 
-use RuntimeException;
+use Ssh\Exception\RuntimeException;
 
 /**
  * An abstract resource holder

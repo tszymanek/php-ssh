@@ -3,6 +3,7 @@
 namespace Ssh;
 
 use PHPUnit\Framework\TestCase;
+use Ssh\Exception\InvalidArgumentException;
 use Ssh\Exception\RuntimeException;
 
 /**
@@ -14,23 +15,28 @@ class SessionTest extends TestCase
 
     public function setUp()
     {
-        $this->configuration = $this->createMock('Ssh\Configuration', array('asArguments'), array('my-host'));
+        $this->configuration = $this->createMock('Ssh\Configuration', ['asArguments'], ['my-host']);
         $this->configuration->expects($this->any())
             ->method('asArguments')
-            ->will($this->returnValue(array('my-host', 21, array(), array())));
+            ->will($this->returnValue(['my-host', 21, [], []]));
     }
 
     public function testAuthenticateOnResourceCreation()
     {
         $resource = tmpfile();
 
-        $authentication = $this->createMock('Ssh\Authentication\Password', array(), array('John', 's3cr3t'));
+        $authentication = $this->createMock('Ssh\Authentication\Password', [], ['John', 's3cr3t']);
         $authentication->expects($this->once())
             ->method('authenticate')
             ->with($this->equalTo($resource))
             ->will($this->returnValue(true));
 
-        $session = $this->createMock('Ssh\Session', array('connect'), array($this->configuration, $authentication));
+        $session = $this
+            ->getMockBuilder(Session::class)
+            ->setConstructorArgs([$this->configuration, $authentication])
+            ->setMethods(['connect'])
+            ->getMock();
+
         $session->expects($this->once())
             ->method('connect')
             ->will($this->returnValue($resource));
@@ -48,7 +54,7 @@ class SessionTest extends TestCase
         $property->setAccessible(true);
         $property->setValue($session, $resource);
 
-        $authentication = $this->createMock('Ssh\Authentication\Password', array('authenticate'), array('John', 's3cr3t'));
+        $authentication = $this->createMock('Ssh\Authentication\Password', ['authenticate'], ['John', 's3cr3t']);
         $authentication->expects($this->once())
             ->method('authenticate')
             ->with($this->equalTo($resource))
@@ -59,7 +65,14 @@ class SessionTest extends TestCase
 
     public function testCreateResourceWillThrowAnExceptionOnConnectionFailure()
     {
-        $session = $this->createMock('Ssh\Session', array('connect'), array($this->configuration));
+        $this->expectException(RuntimeException::class);
+
+        $session = $this
+            ->getMockBuilder(Session::class)
+            ->setConstructorArgs([$this->configuration])
+            ->setMethods(['connect'])
+            ->getMock();
+
         $session->expects($this->any())
             ->method('connect')
             ->will($this->returnValue(false));
@@ -67,19 +80,24 @@ class SessionTest extends TestCase
         $method = new \ReflectionMethod($session, 'createResource');
         $method->setAccessible(true);
 
-        $this->setExpectedException('RuntimeException');
-
         $method->invoke($session);
     }
 
     public function testCreateResourceWillThrowAnExceptionOnAuthenticationFailure()
     {
-        $authentication = $this->createMock('Ssh\Authentication\Password', array('authenticate'), array('John', 's3cr3t'));
+        $this->expectException(RuntimeException::class);
+
+        $authentication = $this->createMock('Ssh\Authentication\Password', ['authenticate'], ['John', 's3cr3t']);
         $authentication->expects($this->any())
             ->method('authenticate')
             ->will($this->returnValue(false));
 
-        $session = $this->createMock('Ssh\Session', array('connect'), array($this->configuration, $authentication));
+        $session = $this
+            ->getMockBuilder(Session::class)
+            ->setConstructorArgs([$this->configuration, $authentication])
+            ->setMethods(['connect'])
+            ->getMock();
+
         $session->expects($this->any())
             ->method('connect')
             ->will($this->returnValue(true));
@@ -87,17 +105,14 @@ class SessionTest extends TestCase
         $method = new \ReflectionMethod($session, 'createResource');
         $method->setAccessible(true);
 
-        $this->setExpectedException('RuntimeException');
-
         $method->invoke($session);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The subsystem 'does_not_exist' is not supported.
-     */
     public function testCreateInvalidSubsystem()
     {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('The subsystem \'does_not_exist\' is not supported.');
+
         $session = new Session($this->configuration);
 
         $session->getSubsystem('does_not_exist');
@@ -131,17 +146,16 @@ class SessionTest extends TestCase
         $this->assertInstanceOf('\Ssh\Exec', $session->getExec());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage The authentication over the current SSH connection failed.
-     */
     public function testAuthenficationException()
     {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('The authentication over the current SSH connection failed.');
+
         // A Authentication that will always fail.
-        $authentication = $this->createMock('Ssh\Authentication\Password', array(), array('John', 's3cr3t'));
+        $authentication = $this->createMock('Ssh\Authentication\Password', [], ['John', 's3cr3t']);
         $authentication->expects($this->once())
-                       ->method('authenticate')
-                       ->will($this->returnValue(false));
+            ->method('authenticate')
+            ->will($this->returnValue(false));
 
         $session = new Session($this->configuration);
 

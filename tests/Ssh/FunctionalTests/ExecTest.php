@@ -7,6 +7,7 @@ namespace Ssh\FunctionalTests;
 use PHPUnit\Framework\TestCase;
 use Ssh\Authentication\Password;
 use Ssh\Configuration;
+use Ssh\Exception\RuntimeException;
 use Ssh\Session;
 
 /**
@@ -45,11 +46,10 @@ class ExecTest extends TestCase
         $this->assertEquals("a\nb\nc\n", $output);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testExecuteErrorOutput()
     {
+        $this->expectException(RuntimeException::class);
+
         $configuration = new Configuration('localhost');
         $authentication = new Password(TEST_USER, TEST_PASSWORD);
         $session = new Session($configuration, $authentication);

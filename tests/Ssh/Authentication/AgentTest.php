@@ -3,10 +3,12 @@
 
 namespace Ssh\Authentication;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * @covers \Ssh\Authentication\Agent
  */
-class AgentTest extends \PHPUnit_Framework_TestCase
+class AgentTest extends TestCase
 {
     public function testClass() {
         $agent = new Agent('user');
@@ -15,4 +17,3 @@ class AgentTest extends \PHPUnit_Framework_TestCase
         $this->assertAttributeEquals('user', 'username', $agent);
     }
 }
- 

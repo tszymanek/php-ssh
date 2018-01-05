@@ -2,10 +2,12 @@
 
 namespace Ssh;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * @covers \Ssh\AbstractResourceHolder
  */
-class AbstractResourceHolderTest extends \PHPUnit_Framework_TestCase
+class AbstractResourceHolderTest extends TestCase
 {
     public function testResourceIsCreatedIfItDoesNotExist()
     {

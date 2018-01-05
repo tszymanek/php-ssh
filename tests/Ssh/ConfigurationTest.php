@@ -2,10 +2,12 @@
 
 namespace Ssh;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * @covers \Ssh\Configuration
  */
-class ConfigurationTest extends \PHPUnit_Framework_TestCase
+class ConfigurationTest extends TestCase
 {
     public function testDefaultPortIs22()
     {

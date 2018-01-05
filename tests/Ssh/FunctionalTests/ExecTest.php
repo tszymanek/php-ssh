@@ -4,6 +4,7 @@
 namespace Ssh\FunctionalTests;
 
 
+use PHPUnit\Framework\TestCase;
 use Ssh\Authentication\Password;
 use Ssh\Configuration;
 use Ssh\Session;
@@ -15,7 +16,7 @@ use Ssh\Session;
  *
  * @covers \Ssh\Exec
  */
-class ExecTest extends \PHPUnit_Framework_TestCase
+class ExecTest extends TestCase
 {
     public function testExecuteWhoami()
     {

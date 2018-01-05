@@ -4,6 +4,7 @@
 namespace Ssh\FunctionalTests;
 
 
+use PHPUnit\Framework\TestCase;
 use Ssh\Authentication\Password;
 use Ssh\Configuration;
 use Ssh\Session;
@@ -16,7 +17,7 @@ use Ssh\Session;
  * @covers \Ssh\Session
  * @covers \Ssh\Authentication\Password
  */
-class LoginTest extends \PHPUnit_Framework_TestCase
+class LoginTest extends TestCase
 {
 
     public function testLoginPassword()
@@ -39,4 +40,3 @@ class LoginTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($login, 'Authentification should have failed.');
     }
 }
- 

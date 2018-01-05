@@ -2,7 +2,10 @@
 
 namespace Ssh;
 
-class SshConfigFileConfigurationTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+use Ssh\Exception\RuntimeException;
+
+class SshConfigFileConfigurationTest extends TestCase
 {
     public function testParseValidSshConfigFile()
     {

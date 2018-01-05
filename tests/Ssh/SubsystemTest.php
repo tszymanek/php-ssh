@@ -2,14 +2,16 @@
 
 namespace Ssh;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * @covers \Ssh\Subsystem
  */
-class SubsystemTest extends \PHPUnit_Framework_TestCase
+class SubsystemTest extends TestCase
 {
     public function testSessionResourceIsNotUsedOnCreation()
     {
-        $session = $this->getMock(
+        $session = $this->createMock(
             'Ssh\Session', array(), array(), '', false
         );
 
@@ -39,7 +41,7 @@ class SubsystemTest extends \PHPUnit_Framework_TestCase
 
     public function testGetSessionResourceWillCallSessionGetResource()
     {
-        $session = $this->getMock(
+        $session = $this->createMock(
             'Ssh\Session', array('getResource'), array(), '', false
         );
         $session->expects($this->once())->method('getResource')->will($this->returnValue('aResource'));

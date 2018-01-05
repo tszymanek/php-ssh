@@ -2,16 +2,19 @@
 
 namespace Ssh;
 
+use PHPUnit\Framework\TestCase;
+use Ssh\Exception\RuntimeException;
+
 /**
  * @covers \Ssh\Session
  */
-class SessionTest extends \PHPUnit_Framework_TestCase
+class SessionTest extends TestCase
 {
     protected $configuration;
 
     public function setUp()
     {
-        $this->configuration = $this->getMock('Ssh\Configuration', array('asArguments'), array('my-host'));
+        $this->configuration = $this->createMock('Ssh\Configuration', array('asArguments'), array('my-host'));
         $this->configuration->expects($this->any())
             ->method('asArguments')
             ->will($this->returnValue(array('my-host', 21, array(), array())));
@@ -21,13 +24,13 @@ class SessionTest extends \PHPUnit_Framework_TestCase
     {
         $resource = tmpfile();
 
-        $authentication = $this->getMock('Ssh\Authentication\Password', array(), array('John', 's3cr3t'));
+        $authentication = $this->createMock('Ssh\Authentication\Password', array(), array('John', 's3cr3t'));
         $authentication->expects($this->once())
             ->method('authenticate')
             ->with($this->equalTo($resource))
             ->will($this->returnValue(true));
 
-        $session = $this->getMock('Ssh\Session', array('connect'), array($this->configuration, $authentication));
+        $session = $this->createMock('Ssh\Session', array('connect'), array($this->configuration, $authentication));
         $session->expects($this->once())
             ->method('connect')
             ->will($this->returnValue($resource));
@@ -45,7 +48,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
         $property->setAccessible(true);
         $property->setValue($session, $resource);
 
-        $authentication = $this->getMock('Ssh\Authentication\Password', array('authenticate'), array('John', 's3cr3t'));
+        $authentication = $this->createMock('Ssh\Authentication\Password', array('authenticate'), array('John', 's3cr3t'));
         $authentication->expects($this->once())
             ->method('authenticate')
             ->with($this->equalTo($resource))
@@ -56,7 +59,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateResourceWillThrowAnExceptionOnConnectionFailure()
     {
-        $session = $this->getMock('Ssh\Session', array('connect'), array($this->configuration));
+        $session = $this->createMock('Ssh\Session', array('connect'), array($this->configuration));
         $session->expects($this->any())
             ->method('connect')
             ->will($this->returnValue(false));
@@ -71,12 +74,12 @@ class SessionTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateResourceWillThrowAnExceptionOnAuthenticationFailure()
     {
-        $authentication = $this->getMock('Ssh\Authentication\Password', array('authenticate'), array('John', 's3cr3t'));
+        $authentication = $this->createMock('Ssh\Authentication\Password', array('authenticate'), array('John', 's3cr3t'));
         $authentication->expects($this->any())
             ->method('authenticate')
             ->will($this->returnValue(false));
 
-        $session = $this->getMock('Ssh\Session', array('connect'), array($this->configuration, $authentication));
+        $session = $this->createMock('Ssh\Session', array('connect'), array($this->configuration, $authentication));
         $session->expects($this->any())
             ->method('connect')
             ->will($this->returnValue(true));
@@ -135,7 +138,7 @@ class SessionTest extends \PHPUnit_Framework_TestCase
     public function testAuthenficationException()
     {
         // A Authentication that will always fail.
-        $authentication = $this->getMock('Ssh\Authentication\Password', array(), array('John', 's3cr3t'));
+        $authentication = $this->createMock('Ssh\Authentication\Password', array(), array('John', 's3cr3t'));
         $authentication->expects($this->once())
                        ->method('authenticate')
                        ->will($this->returnValue(false));

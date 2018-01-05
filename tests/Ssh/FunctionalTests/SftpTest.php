@@ -4,6 +4,7 @@
 namespace Ssh\FunctionalTests;
 
 
+use PHPUnit\Framework\TestCase;
 use Ssh\Authentication\Password;
 use Ssh\Configuration;
 use Ssh\Session;
@@ -17,7 +18,7 @@ use Symfony\Component\Filesystem\Filesystem;
  *
  * @covers \Ssh\Sftp
  */
-class SftpTest extends \PHPUnit_Framework_TestCase
+class SftpTest extends TestCase
 {
     /** @var Configuration */
     private $configuration;

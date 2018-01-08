@@ -12,9 +12,14 @@ use Ssh\Exception\RuntimeException;
  */
 class Session extends AbstractResourceHolder
 {
+    private const DEFAULT_TIMEOUT = 60;
+
     protected $configuration;
     protected $authentication;
     protected $subsystems;
+
+    /** @var int */
+    private $timeout;
 
     /**
      * Constructor
@@ -22,11 +27,12 @@ class Session extends AbstractResourceHolder
      * @param  Configuration  A Configuration instance
      * @param  Authentication An optional Authentication instance
      */
-    public function __construct(Configuration $configuration, Authentication $authentication = null)
+    public function __construct(Configuration $configuration, Authentication $authentication = null, int $timeout = self::DEFAULT_TIMEOUT)
     {
         $this->configuration  = $configuration;
         $this->authentication = $authentication;
         $this->subsystem      = array();
+        $this->timeout = $timeout;
     }
 
     /**
@@ -129,7 +135,13 @@ class Session extends AbstractResourceHolder
      */
     protected function createResource()
     {
+        $originalConnectionTimeout = ini_get('default_socket_timeout');
+        ini_set('default_socket_timeout', $this->timeout);
+
         $resource = $this->connect($this->configuration->asArguments());
+
+        ini_set('default_socket_timeout', $originalConnectionTimeout);
+
 
         if (!is_resource($resource)) {
             throw new RuntimeException('The SSH connection failed.');

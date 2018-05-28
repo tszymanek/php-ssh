@@ -3,6 +3,14 @@
 namespace Ssh;
 
 use Ssh\Exception\RuntimeException;
+use function preg_match;
+use function preg_replace;
+use function ssh2_exec;
+use function ssh2_fetch_stream;
+use function stream_get_contents;
+use function stream_set_blocking;
+use const SSH2_STREAM_STDERR;
+use const SSH2_TERM_UNIT_CHARS;
 
 /**
  * Wrapper for ssh2_exec
@@ -35,17 +43,19 @@ class Exec extends Subsystem
 
         $stdout = ssh2_exec($this->getResource(), $cmd, $pty, $env, $width, $height, $widthHeightType);
         $stderr = ssh2_fetch_stream($stdout, SSH2_STREAM_STDERR);
+        stream_set_blocking($stderr, true);
+        stream_set_blocking($stdout, true);
+
         $error = stream_get_contents($stderr);
         if ($error !== '') {
             $this->error = $error;
         }
-        stream_set_blocking($stderr, true);
-        stream_set_blocking($stdout, true);
 
         $output = stream_get_contents($stdout);
         if ($checkReturnCode === false) {
             return $output;
         }
+
         preg_match('/\[return_code:(.*?)\]/', $output, $match);
         if ((int) $match[1] !== 0) {
             throw new RuntimeException(stream_get_contents($stderr), (int) $match[1]);
